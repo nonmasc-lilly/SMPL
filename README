@@ -1,21 +1,18 @@
         ---Simple Macro Predicated Language---
                 For the developement of x86 assembly programs.
 
-TEST ONE:
-        \
-                ; BNF
-                WSP     = SP | NL | HTAB
-                program = *(byte | WSP)
-                byte    = '$' *HEXDIG
-        \
+SMPL is a simple macro language written with fasm for linux-amd64. So far, a SMPL program is of the form:
 
-        $B8 $48 $0E
-        $CD $10
-        $40
-        $CD $10
-        $EB $FE
+        <program>               ::= <statement> | <statement> <program>
+        <statement>             ::= <constant>  | <macro def> | <macro invokation>
+        <constant>              ::= $ <constant part>
+        <constant part>         ::= <hexdig> | <hexdig> <constant part>
+        <hexdig>                ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | a | b | c | d | e | f | A | B | C | D | E | F
+        <macro def>             ::= @ <identifier> [ <program> ]
+        <macro invokation>      ::= <identifier>
 
-TEST TWO:
+Where <identifier> is any series of characters which is not one of the following: '\x20', '\x0A', '\x0D', '\x09', '@', '[', ']', '$'. These characters are
+called delimiters. An example program follows:
 
         @movax[$B8]
         @int[$CD]
@@ -27,3 +24,22 @@ TEST TWO:
         incax
         int             $10
         jmpshort        $FE
+
+Which is roughly equivalent to the following fasm program:
+
+        org 0x7C00
+        use16
+
+        mov ax, 0x0E48
+        int 0x10
+        inc ax
+        int 0x10
+        jmp $
+
+And, when the shell script which follows is applied, the output will be 'HI' to the qemu terminal:
+
+        smplc <input file> <output file>
+        truncate -s 510 <output file>
+        printf "\x55\xAA" >> <output file>
+        qemu-system-i386 -drive file=<output file>,format=raw
+
