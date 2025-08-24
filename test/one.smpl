@@ -1,0 +1,12 @@
+\
+        ; BNF
+        WSP     = SP | NL | HTAB
+        program = *(byte | WSP)
+        byte    = '$' *HEXDIG
+\
+
+$B8 $0E48
+$CD $10
+$40
+$CD $10
+$EB $FE

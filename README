@@ -1,0 +1,29 @@
+        ---Simple Macro Predicated Language---
+                For the developement of x86 assembly programs.
+
+TEST ONE:
+        \
+                ; BNF
+                WSP     = SP | NL | HTAB
+                program = *(byte | WSP)
+                byte    = '$' *HEXDIG
+        \
+
+        $B8 $48 $0E
+        $CD $10
+        $40
+        $CD $10
+        $EB $FE
+
+TEST TWO:
+
+        @movax[$B8]
+        @int[$CD]
+        @incax[$40]
+        @jmpshort[$EB]
+
+        movax           $0E48
+        int             $10
+        incax
+        int             $10
+        jmpshort        $FE
